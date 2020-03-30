@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <mediaplayer-component />
+    <mediaplayer-component :media="media" />
   </div>
 </template>
 
@@ -9,6 +9,14 @@
 
 export default {
   name: "Home",
-  components: {}
+  components: {},
+  data() {
+    return {
+      media: {
+        mediaType: "audio",
+        mediaUrl: require("./che.mp3")
+      }
+    };
+  }
 };
 </script>
