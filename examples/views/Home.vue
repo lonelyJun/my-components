@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <mediaplayer-component :media="media" />
+    <picture-resize-component />
   </div>
 </template>
 
@@ -11,12 +11,7 @@ export default {
   name: "Home",
   components: {},
   data() {
-    return {
-      media: {
-        mediaType: "audio",
-        mediaUrl: require("./che.mp3")
-      }
-    };
+    return {};
   }
 };
 </script>

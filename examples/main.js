@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import MediaPlayerComponent from "../packages/index";
+import PictureResizeComponent from "../packages/index";
 
-Vue.use(MediaPlayerComponent);
+Vue.use(PictureResizeComponent);
 Vue.config.productionTip = false
 
 new Vue({
