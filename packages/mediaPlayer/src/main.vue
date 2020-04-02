@@ -2,7 +2,7 @@
 
 <template>
   <div class="container">
-    <video v-if="mediaType=='video'" ref="mediaDom">您的浏览器不支持 video 标签。</video>
+    <video v-if="mediaType&&mediaType=='video'" ref="mediaDom">您的浏览器不支持 video 标签。</video>
     <audio v-else ref="mediaDom"></audio>
     <div class="controller">
       <div class="con-btn">
@@ -15,7 +15,7 @@
         ></a>
         <a href="javascript:;" class="player-btn btn-next" title="下一首" @click="()=>{$emit('next')}"></a>
         <a
-          v-if="mediaType!='video'"
+          v-if="mediaType&&mediaType!='video'"
           href="javascript:;"
           :class="{'player-btn':true, 'btn-order':true,'btn-order-random':playModel=='random','btn-order-single':playModel=='single'}"
           title="循环控制"
@@ -56,12 +56,16 @@
 <script>
 /**
  * 外部输入参数
- * @param mType 媒体类型，'video'为视频，其他为音频
- * @param mUrl  媒体路径
+ * @param mediaType 媒体类型，'video'为视频，其他为音频
+ * @param meidainfo  对象类型
+ * 包含@param   meidainfo.url  媒体路径
+ * 包含@param   meidainfo.id   媒体主键
+ * @param keyValue  唯一值对象
+ * @param autoFlag  Boolean  是否自动播放
  */
 export default {
   name: "MediaplayerComponent",
-  props: ["media"],
+  props: ["mediainfo", "keyValue", "mediaType", "autoPlayFlag"],
   data() {
     return {
       //控制状态
@@ -81,18 +85,15 @@ export default {
   components: {},
 
   computed: {
-    mediaUrl() {
-      return this.media.mediaUrl;
-    },
-    mediaType() {
-      return this.media.mediaType;
-    },
     playModel() {
       return this.playModelList[this.playModelIndex];
     }
   },
 
   watch: {
+    keyValue() {
+      this.init();
+    },
     volume(v) {
       if (this.$refs.mediaDom) {
         this.$refs.mediaDom.muted = v == 0 ? true : false;
@@ -111,11 +112,7 @@ export default {
   },
 
   mounted() {
-    let mDom = this.$refs.mediaDom;
-    if (this.mediaUrl) {
-      mDom.src = this.mediaUrl;
-      mDom.play();
-    }
+    this.init();
     this.addMediaEventListener();
   },
 
@@ -159,7 +156,14 @@ export default {
       }
     },
     //初始化选项
-    init() {},
+    init() {
+      let mDom = this.$refs.mediaDom;
+      mDom.src = this.mediainfo.url;
+      this.currentStatus = "pause";
+      if (this.autoPlayFlag) {
+        mDom.play();
+      }
+    },
     //将second转为XX:XX:XX模式
     secondToTimeStr(t) {
       let h = Math.floor(t / 3600);
@@ -200,6 +204,7 @@ export default {
         mDom.addEventListener("loadedmetadata", () => {
           this.duration = mDom.duration;
           this.volume = mDom.volume;
+          // mDom.play();
         });
         mDom.addEventListener("play", () => {
           this.currentStatus = "playing";
@@ -224,7 +229,7 @@ export default {
   }
 };
 </script>
-<style lang='scss' scoped>
+<style lang='scss'>
 .controller {
   .player-btn {
     background-image: url(./images/player.png);
